@@ -20,6 +20,10 @@ grep -v "^#" $IPLIST |while read ip desc; do
     fi
     echo "Trace to $ip $desc" 1>&2
 
+    if [ -n "$desc" ]; then
+        echo "\"$ip\" [label=\"\\N\n$desc\"];"
+    fi
+
     LAST=
     mtr --no-dns --report --report-cycles 2 --csv $ip | cut -d"," -f6 | while read j; do
         if [ "$j" = "???" ]; then
