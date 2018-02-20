@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+#
+
+/sbin/route -Cn |cut -d" " -f1 |egrep "^[0-9]" |sort |uniq
+
+

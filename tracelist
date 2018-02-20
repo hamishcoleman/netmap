@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+#
+
+#echo "graph G {"
+
+LAST=`hostname`
+
+(
+while read DST; do
+	traceroute -m 10 -w 5 -q 1 -n $DST 2>&1 |awk -- '{print $2}' |
+	while read j; do
+		if [ "$j" = "to" ]; then
+			continue;
+		fi
+		if [ "$j" = "$LAST" ]; then
+			continue;
+		fi
+		if [ "$j" = '*' ]; then
+			LAST=
+			continue;
+		fi
+		if [ -n "$LAST" ]; then
+			echo "\"$LAST\" -- \"$j\";"
+		fi
+		LAST="$j"
+	done
+done
+)
+
+# | sort | uniq
+#
+#echo "}"
+

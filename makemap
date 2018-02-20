@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+#
+
+echo "graph G {"
+
+DST=`/sbin/route -Cn |cut -d" " -f1 |egrep "^[0-9]" |sort |uniq`
+
+for i in $DST; do
+	HOPS=`traceroute -q 1 -n 72.14.235.9 2>&1 |awk -- '{print $2}' |egrep "^[0-9]"`
+	LAST=
+	for j in $HOPS; do
+		if [ -n "$LAST" ]; then
+			echo " \"$LAST\" -- \"$j\";"
+		fi
+		LAST=$j
+	done
+done
+
+echo "}"
+

@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+#
+
+HOST="$1"
+shift
+if [ -z "$HOST" ]; then
+	echo need hostname
+	exit 1
+fi
+
+DOT=`tempfile -d. -s.dot`
+PNG=`basename $DOT .dot`.png
+
+(
+echo "graph G {"
+(
+for i in $*; do
+	LAST=
+	ssh -t $HOST sudo /usr/sbin/mtr -n -r -c 2 $i | cut -d" " -f1 |
+	while read j; do
+		if [ "$j" = "???" ]; then
+			LAST=
+			continue
+		fi
+		if [ -n "$LAST" ]; then
+			echo "\"$LAST\" -- \"$j\";"
+		fi
+		LAST="$j"
+	done
+done
+) | sort | uniq
+echo "}"
+) >$DOT
+dot -Tpng -o$PNG <$DOT
+echo $PNG
