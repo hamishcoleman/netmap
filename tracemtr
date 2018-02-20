@@ -24,17 +24,19 @@ grep -v "^#" $IPLIST |while read ip desc; do
         echo "\"$ip\" [label=\"\\N\n$desc\"];"
     fi
 
+    (
     LAST=
-    mtr --no-dns --report --report-cycles 2 --csv $ip | cut -d"," -f6 | while read j; do
-        if [ "$j" = "???" ]; then
-            LAST=
-            continue
+    IFS=","
+    mtr --no-dns --report --report-cycles 2 --csv $ip | while read m_ver m_time m_status m_host m_hop m_ip m_rest; do
+        if [ "$m_ip" = "???" ]; then
+            m_ip="UNK_${m_host}_${m_hop}"
         fi
         if [ -n "$LAST" ]; then
-            echo "\"$LAST\" -- \"$j\";"
+            echo "\"$LAST\" -- \"$m_ip\";"
         fi
-        LAST="$j"
+        LAST="$m_ip"
     done
+    )
 done | sort | uniq >>$DOT
 
 echo "}" >>$DOT
