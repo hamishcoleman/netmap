@@ -9,7 +9,7 @@ if [ -z "$1" ]; then
 fi
 IPLIST="$1"
 
-DOT=`tempfile -d. -s.dot`
+DOT=`date "+output-%s.dot"`
 
 echo "# $0 $#" >$DOT
 echo "graph G {" >>$DOT
