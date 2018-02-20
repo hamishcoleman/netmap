@@ -1,0 +1,6 @@
+Using simple tools like traceroute, build a network
+map in a machine readable graphviz layout.
+
+This can be used to find changes in the network, or
+just for documentation purposes.
+
