@@ -1,36 +1,28 @@
 #!/bin/bash
 #
-#
-
-HOST="$1"
-shift
-if [ -z "$HOST" ]; then
-	echo need hostname
-	exit 1
-fi
+# Given a list of IP addresses, use mtr to trace to each one and then
+# draw a dot file
 
 DOT=`tempfile -d. -s.dot`
-PNG=`basename $DOT .dot`.png
 
-(
-echo "graph G {"
-(
+echo "# $0 $#" >$DOT
+echo "graph G {" >>$DOT
+
 for i in $*; do
-	LAST=
-	ssh -t $HOST sudo /usr/sbin/mtr -n -r -c 2 $i | cut -d" " -f1 |
-	while read j; do
-		if [ "$j" = "???" ]; then
-			LAST=
-			continue
-		fi
-		if [ -n "$LAST" ]; then
-			echo "\"$LAST\" -- \"$j\";"
-		fi
-		LAST="$j"
-	done
-done
-) | sort | uniq
-echo "}"
-) >$DOT
-dot -Tpng -o$PNG <$DOT
-echo $PNG
+    LAST=
+    mtr --no-dns --report --report-cycles 2 --csv $i | cut -d"," -f6 | while read j; do
+        if [ "$j" = "???" ]; then
+            LAST=
+            continue
+        fi
+        if [ -n "$LAST" ]; then
+            echo "\"$LAST\" -- \"$j\";"
+        fi
+        LAST="$j"
+    done
+done | sort | uniq >>$DOT
+
+echo "}" >>$DOT
+
+echo $DOT
+
