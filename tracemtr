@@ -14,14 +14,14 @@ DOT=`tempfile -d. -s.dot`
 echo "# $0 $#" >$DOT
 echo "graph G {" >>$DOT
 
-grep -v "^#" $IPLIST |while read i; do
-    if [ -z "$i" ]; then
+grep -v "^#" $IPLIST |while read ip desc; do
+    if [ -z "$ip" ]; then
         continue
     fi
-    echo "Trace to $i" 1>&2
+    echo "Trace to $ip $desc" 1>&2
 
     LAST=
-    mtr --no-dns --report --report-cycles 2 --csv $i | cut -d"," -f6 | while read j; do
+    mtr --no-dns --report --report-cycles 2 --csv $ip | cut -d"," -f6 | while read j; do
         if [ "$j" = "???" ]; then
             LAST=
             continue
