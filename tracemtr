@@ -25,14 +25,19 @@ cat "$IPLIST" | while read _ip _desc; do
     fi
     echo "Trace to $ip $desc" 1>&2
 
-    if [ -n "$desc" ]; then
     NODE_STR="\"$ip\" [color=green label=\"\\N\n$desc\"];"
+
+    mkdir -p traces
+    TRACE=traces/$DATE.$ip
+
+    if [ ! -e "$TRACE" ]; then
+        mtr --no-dns --report --report-cycles 2 --csv $ip >$TRACE
     fi
 
     (
     LAST=
     IFS=","
-    mtr --no-dns --report --report-cycles 2 --csv $ip | while read m_ver m_time m_status m_host m_hop m_ip m_rest; do
+    cat $TRACE | while read m_ver m_time m_status m_host m_hop m_ip m_loss m_rest; do
         if [ "$m_ip" = "???" ]; then
             m_ip="UNK_${m_host}_${m_hop}"
         fi
