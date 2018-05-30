@@ -9,9 +9,12 @@ if [ -z "$1" ]; then
 fi
 IPLIST="$1"
 
-DOT=`date "+$IPLIST-%s.dot"`
+# Date is quantised to most recent 10 minutes - forming a kind of cache
+DATE=$(($(date +%s)/600*600))
 
-echo "# $0 $#" >$DOT
+DOT="$IPLIST-$DATE.dot"
+
+echo "# $0 $*" >$DOT
 echo "graph G {" >>$DOT
 
 grep -v "^#" $IPLIST |while read ip desc; do
