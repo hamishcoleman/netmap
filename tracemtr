@@ -26,7 +26,7 @@ cat "$IPLIST" | while read _ip _desc; do
     echo "Trace to $ip $desc" 1>&2
 
     if [ -n "$desc" ]; then
-        echo "\"$ip\" [label=\"\\N\n$desc\"];"
+    NODE_STR="\"$ip\" [color=green label=\"\\N\n$desc\"];"
     fi
 
     (
