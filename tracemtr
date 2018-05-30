@@ -40,9 +40,14 @@ cat "$IPLIST" | while read _ip _desc; do
     cat $TRACE | while read m_ver m_time m_status m_host m_hop m_ip m_loss m_rest; do
         if [ "$m_ip" = "???" ]; then
             m_ip="UNK_${m_host}_${m_hop}"
+            echo "\"$m_ip\" [color=red];"
         fi
         if [ -n "$LAST" ]; then
             echo "\"$LAST\" -- \"$m_ip\";"
+        fi
+        if [ "$ip" = "$m_ip" ]; then
+            # this is a reply from the actual destination
+            echo "$NODE_STR"
         fi
         LAST="$m_ip"
     done
