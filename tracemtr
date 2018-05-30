@@ -17,7 +17,9 @@ DOT="$IPLIST-$DATE.dot"
 echo "# $0 $*" >$DOT
 echo "graph G {" >>$DOT
 
-grep -v "^#" $IPLIST |while read ip desc; do
+cat "$IPLIST" | while read _ip _desc; do
+    ip=`echo "$_ip" | sed -e 's/#.*//'`
+    desc=`echo "$_desc" | sed -e 's/#.*//'`
     if [ -z "$ip" ]; then
         continue
     fi
