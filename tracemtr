@@ -37,7 +37,7 @@ done
 
 DOT="$PREFIX.dot"
 echo "# $0 $*" >$DOT
-echo "graph G {" >>$DOT
+echo "digraph G {" >>$DOT
 
 for TRACE in traces/$PREFIX.*; do
     (
@@ -57,7 +57,7 @@ for TRACE in traces/$PREFIX.*; do
             echo "\"$m_ip\" [color=red];"
         fi
         if [ -n "$LAST" ]; then
-            echo "\"$LAST\" -- \"$m_ip\";"
+            echo "\"$LAST\" -> \"$m_ip\";"
         fi
         if [ "$m_ip" = "$m_host" ]; then
             # this is a reply from the actual destination
