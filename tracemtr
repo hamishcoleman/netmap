@@ -9,14 +9,14 @@ if [ -z "$1" ]; then
 fi
 IPLIST="$1"
 
+mkdir -p traces
+
 # Date is quantised to most recent 10 minutes - forming a kind of cache
 DATE=$(($(date +%s)/600*600))
 
-DOT="$IPLIST-$DATE.dot"
+PREFIX="$IPLIST-$DATE"
 
-echo "# $0 $*" >$DOT
-echo "graph G {" >>$DOT
-
+# First, collect traces
 cat "$IPLIST" | while read _ip _desc; do
     ip=`echo "$_ip" | sed -e 's/#.*//'`
     desc=`echo "$_desc" | sed -e 's/#.*//'`
@@ -25,15 +25,20 @@ cat "$IPLIST" | while read _ip _desc; do
     fi
     echo "Trace to $ip $desc" 1>&2
 
-    NODE_STR="\"$ip\" [color=green label=\"\\N\n$desc\"];"
-
-    mkdir -p traces
-    TRACE=traces/$DATE.$ip
+    TRACE=traces/$PREFIX.$ip
 
     if [ ! -e "$TRACE" ]; then
         mtr --no-dns --report --report-cycles 2 --csv $ip >$TRACE
     fi
+done
 
+# Second, create dot file
+
+DOT="$PREFIX.dot"
+echo "# $0 $*" >$DOT
+echo "graph G {" >>$DOT
+
+for TRACE in traces/$PREFIX.*; do
     (
     LAST=
     IFS=","
@@ -45,8 +50,9 @@ cat "$IPLIST" | while read _ip _desc; do
         if [ -n "$LAST" ]; then
             echo "\"$LAST\" -- \"$m_ip\";"
         fi
-        if [ "$ip" = "$m_ip" ]; then
+        if [ "$m_ip" = "$m_host" ]; then
             # this is a reply from the actual destination
+            NODE_STR="\"$m_host\" [color=green label=\"\\N\n$desc\"];"
             echo "$NODE_STR"
         fi
         LAST="$m_ip"
