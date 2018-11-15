@@ -46,11 +46,11 @@ for TRACE in traces/$PREFIX.*; do
     cat $TRACE | while read m_ver m_time m_status m_host m_hop m_ip m_loss m_rest; do
         if [ "$m_ver" = "#" ]; then
             orig_desc="$m_time"
-            continue
-        fi
-        if [ "$m_ip" = "Ip" ]; then
             m_ip="$IPLIST"
             echo "\"$m_ip\" [color=blue shape=rect];"
+        fi
+        if [ "$m_ip" = "Ip" ]; then
+            continue
         fi
         if [ "$m_ip" = "???" ]; then
             m_ip="UNK_${m_host}_${m_hop}"
