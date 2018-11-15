@@ -28,7 +28,8 @@ cat "$IPLIST" | while read _ip _desc; do
     TRACE=traces/$PREFIX.$ip
 
     if [ ! -e "$TRACE" ]; then
-        mtr --no-dns --report --report-cycles 2 --csv $ip >$TRACE
+        echo "#,$desc" >$TRACE
+        mtr --no-dns --report --report-cycles 2 --csv $ip >>$TRACE
     fi
 done
 
@@ -43,6 +44,10 @@ for TRACE in traces/$PREFIX.*; do
     LAST=
     IFS=","
     cat $TRACE | while read m_ver m_time m_status m_host m_hop m_ip m_loss m_rest; do
+        if [ "$m_ver" = "#" ]; then
+            orig_desc="$m_time"
+            continue
+        fi
         if [ "$m_ip" = "Ip" ]; then
             m_ip="$IPLIST"
             echo "\"$m_ip\" [color=blue shape=rect];"
@@ -56,7 +61,7 @@ for TRACE in traces/$PREFIX.*; do
         fi
         if [ "$m_ip" = "$m_host" ]; then
             # this is a reply from the actual destination
-            NODE_STR="\"$m_host\" [color=green label=\"\\N\n$desc\"];"
+            NODE_STR="\"$m_host\" [color=green label=\"\\N\n$orig_desc\"];"
             echo "$NODE_STR"
         fi
         LAST="$m_ip"
