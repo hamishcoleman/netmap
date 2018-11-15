@@ -29,7 +29,7 @@ cat "$IPLIST" | while read _ip _desc; do
 
     if [ ! -e "$TRACE" ]; then
         echo "#,$desc" >$TRACE
-        mtr --no-dns --report --report-cycles 2 --csv $ip >>$TRACE
+        mtr --no-dns --report --report-cycles 2 --csv $ip |tr ';' ',' >>$TRACE
     fi
 done
 
