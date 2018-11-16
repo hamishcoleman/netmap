@@ -4,3 +4,36 @@ map in a machine readable graphviz layout.
 This can be used to find changes in the network, or
 just for documentation purposes.
 
+Configure
+---------
+
+Create a text file with the list of network destinations.  Use hash symbols
+to start comments.  Any destination can also have a text description - added
+after a space - which will be shown in the final output.
+
+Multiple different source files might exist, for probing different sets of
+destinations, or for running probes from different sources
+
+Run
+---
+
+Usage:
+
+    .../tracemtr $DESTINATIONSFILE
+
+It will probe the route to each destination in the file and cache the raw
+results in a subdirectory called traces.
+
+Once all the results are collected, a graphvis file will be created showing
+the paths that were observed.
+
+TODO
+----
+
+- make multiple probe sources work better
+- glom runs of unknown hops together
+- name unknown hops in such a way to increase the chances that other runs will
+  share the same unknown hop when it makes sense to do so
+- some of these improvements might suggest a rewrite to not use bash
+- improve the storage format so that it is more suitable for storing the output
+  in a version control system
